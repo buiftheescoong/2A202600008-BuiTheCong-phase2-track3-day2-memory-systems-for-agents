@@ -1,0 +1,39 @@
+## Docker Networking FAQ
+
+Q: Làm sao để container A gọi container B trong cùng docker-compose?
+A: Dùng tên service làm hostname. Ví dụ nếu service tên "db" thì kết nối tới "db:5432" thay vì "localhost:5432". Docker Compose tự tạo network chung cho các service.
+
+Q: Lỗi "connection refused" khi gọi localhost từ container?
+A: Trong container, localhost chỉ tới chính container đó. Dùng tên service hoặc host.docker.internal để gọi host machine.
+
+## Python Best Practices FAQ
+
+Q: Khi nào nên dùng dataclass vs Pydantic model?
+A: Dùng dataclass cho internal data structures đơn giản. Dùng Pydantic khi cần validation, serialization (API input/output), hoặc settings management.
+
+Q: Cách xử lý environment variables an toàn?
+A: Dùng python-dotenv với file .env. Không hardcode secrets. Dùng Pydantic Settings class để validate và type-cast env vars.
+
+## LangChain/LangGraph FAQ
+
+Q: LangGraph khác LangChain agents ở điểm nào?
+A: LangGraph cho phép define explicit graph flow với state management. LangChain agents dùng ReAct loop implicit. LangGraph phù hợp khi cần control flow phức tạp, multi-step reasoning, hoặc human-in-the-loop.
+
+Q: Cách tối ưu token usage khi dùng memory?
+A: Dùng sliding window cho short-term, summarize old messages, set token budget cho mỗi memory section, priority-based eviction khi gần limit.
+
+## Redis FAQ
+
+Q: Redis Strings vs Hashes khi lưu user profile?
+A: Dùng Hashes (HSET/HGET) cho profile vì có thể get/set từng field riêng lẻ mà không cần serialize/deserialize toàn bộ object.
+
+Q: Redis có persist data không?
+A: Có, dùng RDB snapshots hoặc AOF (Append Only File). Trong docker-compose dùng --appendonly yes để enable AOF.
+
+## Debugging FAQ
+
+Q: Cách debug khi LLM response không như mong đợi?
+A: 1) Log full prompt để xem context gửi cho LLM. 2) Kiểm tra memory retrieval có đúng không. 3) Thử giảm temperature. 4) Kiểm tra token limit có bị cắt prompt không.
+
+Q: Lỗi "rate limit" khi gọi API?
+A: Implement exponential backoff retry. Dùng batch processing thay vì gọi liên tục. Cache kết quả để giảm số lần gọi API.
